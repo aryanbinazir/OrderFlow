@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <Folder Include="DTOs\" />
-    <Folder Include="Helper\" />
+    <Folder Include="Helper\Exception\" />
     <Folder Include="IPatterns\" />
     <Folder Include="IRepositories\" />
     <Folder Include="IServices\" />

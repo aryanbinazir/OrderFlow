@@ -1,19 +1,20 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
-using TicketingService.API.DI;
+using OrderFlow.API.DI;
+using OrderFlow.Infrastructure.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddDbContext<OrderFlowContext>(option =>
+option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.RegisterSwagger();
 
-
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger(options => options.OpenApiVersion = OpenApiSpecVersion.OpenApi2_0);
@@ -24,6 +25,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+app.UseCors("AllowAll");
 app.MapControllers();
 
 app.Run();

@@ -1,6 +1,6 @@
 using Microsoft.OpenApi;
 
-namespace TicketingService.API.DI
+namespace OrderFlow.API.DI
 {
     public static class Swagger
     {
