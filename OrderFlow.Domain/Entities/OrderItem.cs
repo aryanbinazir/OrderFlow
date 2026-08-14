@@ -16,7 +16,12 @@ namespace OrderFlow.Domain.Entities
         public Guid OrderId { get; set; }
         public Order Order { get; set; }
 
-        public OrderItem Create(Guid productId, Guid OrderId, decimal unitPrice, int quantity, Guid? createdBy = null)
+        public static OrderItem Create(
+            Guid productId,
+            Guid OrderId,
+            decimal unitPrice,
+            int quantity,
+            Guid? createdBy = null)
         {
             if (productId == Guid.Empty) throw new DomainValidationException("Invalid product id.");
             if (unitPrice < 0) throw new DomainValidationException("Unit price must be non-negative.");

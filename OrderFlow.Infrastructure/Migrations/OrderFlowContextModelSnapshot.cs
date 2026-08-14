@@ -263,7 +263,9 @@ namespace OrderFlow.Infrastructure.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("Stock")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.HasKey("Id");
 
@@ -362,13 +364,6 @@ namespace OrderFlow.Infrastructure.Migrations
                             FarsiName = "مشتری",
                             IsActive = true,
                             Name = "Client"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            FarsiName = "مهمان",
-                            IsActive = true,
-                            Name = "Guest"
                         });
                 });
 

@@ -9,8 +9,5 @@ namespace OrderFlow.Domain.Enums
 
         [Description("مشتری")]
         Client = 2,
-
-        [Description("مهمان")]
-        Guest = 3
     }
 }

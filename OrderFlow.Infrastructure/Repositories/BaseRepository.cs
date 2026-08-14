@@ -13,17 +13,17 @@ namespace OrderFlow.Infrastructure.Repositories
             _db = db;
             dbSet = _db.Set<T>();
         }
-        public void Add(T entity)
+        public async Task Add(T entity)
         {
-            dbSet.Add(entity);
+            await dbSet.AddAsync(entity);
         }
 
-        public bool Any(Expression<Func<T, bool>> filter)
+        public async Task<bool> Any(Expression<Func<T, bool>> filter)
         {
-            return dbSet.Any(filter);
+            return await dbSet.AnyAsync(filter);
         }
 
-        public T Get(Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracked = false)
+        public async Task<T?> Get(Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracked = false)
         {
             IQueryable<T> query;
             if (tracked)
@@ -40,7 +40,7 @@ namespace OrderFlow.Infrastructure.Repositories
             }
             if (!string.IsNullOrEmpty(includeProperties))
             {
-                //Villa,VillaNumber -- case sensitive
+                //Category,Product -- case sensitive
                 foreach (var includeProp in includeProperties
                     .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
                 {
@@ -50,7 +50,7 @@ namespace OrderFlow.Infrastructure.Repositories
             return query.FirstOrDefault();
         }
 
-        public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null, string? includeProperties = null, bool tracked = false)
+        public async Task<IEnumerable<T>> GetAll(Expression<Func<T, bool>>? filter = null, string? includeProperties = null, bool tracked = false)
         {
             IQueryable<T> query;
             if (tracked)
@@ -74,11 +74,6 @@ namespace OrderFlow.Infrastructure.Repositories
                 }
             }
             return query.ToList();
-        }
-
-        public void Remove(T entity)
-        {
-            dbSet.Remove(entity);
         }
     }
 }

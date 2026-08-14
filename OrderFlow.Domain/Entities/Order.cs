@@ -23,7 +23,11 @@ namespace OrderFlow.Domain.Entities
         public Guid UserId { get; private set; }
         public User User { get; private set; }
 
-        public static Order Create(Guid userId, int orderNumber, ICollection<OrderItem> OrderItems, Guid? createdBy = null)
+        public static Order Create(
+            Guid userId,
+            int orderNumber,
+            ICollection<OrderItem> OrderItems,
+            Guid? createdBy = null)
         {
             if (userId == Guid.Empty) throw new DomainValidationException("Invalid user id.");
             if (orderNumber <= 0) throw new DomainValidationException("Order number must be a positive integer.");
@@ -42,13 +46,14 @@ namespace OrderFlow.Domain.Entities
             return order;
         }
 
-        public void AddItem(Guid productId, decimal unitPrice, int quantity, Guid? modifiedBy = null)
+        public void AddItem(
+            Guid productId,
+            decimal unitPrice,
+            int quantity)
         {
             EnsureMutable();
-            var orderItem = new OrderItem();
-            var newOrderItem = orderItem.Create(productId, Id, unitPrice, quantity);
-            OrderItems.Add(newOrderItem);
-            TouchRecord(modifiedBy);
+            var orderItem = OrderItem.Create(productId, Id, unitPrice, quantity);
+            OrderItems.Add(orderItem);
         }
 
         public void RemoveItem(Guid orderItemId, Guid? modifiedBy = null)
@@ -57,9 +62,7 @@ namespace OrderFlow.Domain.Entities
             var item = OrderItems.FirstOrDefault(i => i.Id == orderItemId);
 
             if (item is null)
-                throw new DomainValidationException("Order item not found.");
-
-            OrderItems.Remove(item);
+                throw new DomainValidationException("Order item not found."); 
         }
 
         public void Confirm(Guid? modifiedBy = null)

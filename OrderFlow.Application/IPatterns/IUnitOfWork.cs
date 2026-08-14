@@ -5,7 +5,6 @@ namespace OrderFlow.Application.IPatterns;
 public interface IUnitOfWork
 {
     IOrderRepository OrderRepository { get; }
-    IOrderItemRepository OrderItemRepository { get; }
     IProductRepository ProductRepository { get; }
     ICategoryRepository CategoryRepository { get; }
     IUserRepository UserRepository { get; }

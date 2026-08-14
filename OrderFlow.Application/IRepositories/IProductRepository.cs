@@ -4,7 +4,7 @@ namespace OrderFlow.Infrastructure.Repositories.IRepositories
 {
     public interface IProductRepository : IBaseRepository<Product>
     {
-        void Update(Product entity);
+        Task Update(Product entity);
     }
 }
 

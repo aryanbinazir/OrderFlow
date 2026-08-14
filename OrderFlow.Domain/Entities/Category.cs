@@ -11,7 +11,11 @@ namespace OrderFlow.Domain.Entities
         public ICollection<Category>? Children { get; private set; }
         public ICollection<Product>? Products { get; set; }
 
-        public static Category Create(string name, string? description = null, Guid? parentCategoryId = null, Guid? createdBy = null)
+        public static Category Create(
+            string name,
+            string? description = null,
+            Guid? parentId = null,
+            Guid? createdBy = null)
         {
             ValidateName(name);
             var category = new Category
@@ -19,7 +23,7 @@ namespace OrderFlow.Domain.Entities
                 Id = Guid.NewGuid(),
                 Name = name.Trim(),
                 Description = description,
-                ParentId = parentCategoryId,
+                ParentId = parentId,
             };
             category.CreateRecord(createdBy);
 
@@ -27,10 +31,10 @@ namespace OrderFlow.Domain.Entities
         }
 
         public void Update(
-     string? name = null,
-     string? description = null,
-     Guid? parentId = null,
-     Guid? modifiedBy = null)
+            string? name = null,
+            string? description = null,
+            Guid? parentId = null,
+            Guid? modifiedBy = null)
         {
             var changed = false;
 

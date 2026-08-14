@@ -4,6 +4,6 @@ namespace OrderFlow.Infrastructure.Repositories.IRepositories
 {
     public interface ICategoryRepository : IBaseRepository<Category>
     {
-        void Update(Category entity);
+        Task Update(Category entity);
     }
 }

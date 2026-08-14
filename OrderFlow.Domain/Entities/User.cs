@@ -11,11 +11,15 @@ namespace OrderFlow.Domain.Entities
         public string PasswordHash { get; private set; }
         public string? DisplayName { get; private set; }
 
-        public _UserRole RoleId { get; set; } = _UserRole.Guest;
+        public _UserRole RoleId { get; set; } = _UserRole.Client;
         public UserRole UserRole { get; set; }
         public ICollection<Order> Orders { get; set; } = new List<Order>();
 
-        public static User Create(string email, string passwordHash, string? displayName = null, Guid? createdBy = null)
+        public static User Create(
+            string email,
+            string passwordHash,
+            string? displayName = null,
+            Guid? createdBy = null)
         {
             ValidateEmail(email);
             ValidatePasswordHash(passwordHash);
@@ -33,42 +37,17 @@ namespace OrderFlow.Domain.Entities
         }
         
         // Partial update - updates only provided values (null means no change)
-        public void Update(string? email = null, string? passwordHash = null, string? displayName = null, Guid? modifiedBy = null)
+        public void UpdateDisplayName(string? displayName = null, Guid? modifiedBy = null)
         {
-            var changed = false;
-
-            if (email is not null)
-            {
-                ValidateEmail(email);
-                if (!string.Equals(Email, email, StringComparison.OrdinalIgnoreCase))
-                {
-                    Email = email.Trim();
-                    changed = true;
-                }
-            }
-
-            if (passwordHash is not null)
-            {
-                ValidatePasswordHash(passwordHash);
-                if (!string.Equals(PasswordHash, passwordHash, StringComparison.Ordinal))
-                {
-                    PasswordHash = passwordHash;
-                    changed = true;
-                }
-            }
-
             if (displayName is not null)
             {
-                var newDisplay = string.IsNullOrWhiteSpace(displayName) ? null : displayName.Trim();
-                if (!string.Equals(DisplayName, newDisplay, StringComparison.Ordinal))
+                var newDisplayName = string.IsNullOrWhiteSpace(displayName) ? null : displayName.Trim();
+                if (!string.Equals(DisplayName, newDisplayName, StringComparison.Ordinal))
                 {
-                    DisplayName = newDisplay;
-                    changed = true;
+                    DisplayName = newDisplayName;
+                    TouchRecord(modifiedBy);
                 }
             }
-
-            if (changed)
-                TouchRecord(modifiedBy);
         }
 
         public void PromoteToAdmin(Guid userId, Guid? modifiedBy = null)
@@ -76,14 +55,6 @@ namespace OrderFlow.Domain.Entities
             if (userId == Guid.Empty) throw new DomainValidationException("Invalid user id.");
             if (RoleId == _UserRole.Admin) throw new DomainValidationException("User is already an admin.");
             RoleId = _UserRole.Admin;
-            TouchRecord(modifiedBy);
-        }
-
-        public void PromoteToClient(Guid userId, Guid? modifiedBy = null)
-        {
-            if (userId == Guid.Empty) throw new DomainValidationException("Invalid user id.");
-            if (RoleId == _UserRole.Client) throw new DomainValidationException("User is already a client.");
-            RoleId = _UserRole.Client;
             TouchRecord(modifiedBy);
         }
 

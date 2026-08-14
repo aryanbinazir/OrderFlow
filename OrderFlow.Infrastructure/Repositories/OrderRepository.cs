@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using OrderFlow.Domain.Entities;
 using OrderFlow.Infrastructure.Context;
 using OrderFlow.Infrastructure.Repositories.IRepositories;
@@ -10,6 +11,11 @@ namespace OrderFlow.Infrastructure.Repositories
         public OrderRepository(OrderFlowContext context) : base(context)
         {
             _context = context;
+        }
+
+        public Task<int> GetNextOrderNumber()
+        {
+            return _context.Orders.OrderByDescending(o => o.OrderNumber).Select(o => o.OrderNumber).FirstOrDefaultAsync();
         }
 
         public void Update(Order entity)

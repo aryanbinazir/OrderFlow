@@ -8,13 +8,20 @@ namespace OrderFlow.Domain.Entities
         public string? Description { get; private set; }
         public string SKU { get; private set; } = string.Empty;
         public decimal Price { get; private set; }
-        public int Stock { get; private set; }
+        public int Stock { get; private set; } = 0;
 
         public Guid? CategoryId { get; private set; }
         public Category? Category { get; private set; }
         public ICollection<OrderItem>? orderItems { get; set; }
 
-        public static Product Create(string name, decimal price, string sku, Guid? categoryId, int stock = 0, string? description = null, Guid? createdBy = null)
+        public static Product Create(
+            string name,
+            decimal price,
+            string sku,
+            Guid? categoryId,
+            int stock,
+            string? description = null,
+            Guid? createdBy = null)
         {
             ValidateName(name);
             ValidatePrice(price);
@@ -37,12 +44,12 @@ namespace OrderFlow.Domain.Entities
         }
 
         public void Update(
-    string? name = null,
-    decimal? price = null,
-    string? sku = null,
-    Guid? categoryId = null,
-    string? description = null,
-    Guid? modifiedBy = null)
+            string? name = null,
+            decimal? price = null,
+            string? sku = null,
+            Guid? categoryId = null,
+            string? description = null,
+            Guid? modifiedBy = null)
         {
             var changed = false;
 

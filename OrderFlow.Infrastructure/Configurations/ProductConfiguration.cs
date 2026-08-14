@@ -28,7 +28,8 @@ namespace OrderFlow.Infrastructure.Configurations
                 .IsRequired();
 
             builder.Property(p => p.Stock)
-                .IsRequired();
+                .IsRequired()
+                .HasDefaultValue(0);
 
             builder.Property(p => p.CategoryId)
                 .IsRequired(false);

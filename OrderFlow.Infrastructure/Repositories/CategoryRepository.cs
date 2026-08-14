@@ -13,9 +13,10 @@ namespace OrderFlow.Infrastructure.Repositories
             _context = context;
         }
 
-        public void Update(Category entity)
+        public Task Update(Category entity)
         {
             _context.Categories.Update(entity);
+            return Task.CompletedTask;
         }
     }
 }

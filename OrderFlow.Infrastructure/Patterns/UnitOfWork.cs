@@ -15,10 +15,6 @@ public class UnitOfWork(OrderFlowContext context, IServiceProvider serviceProvid
     public IOrderRepository OrderRepository =>
         _orderRepository ??= serviceProvider.GetRequiredService<IOrderRepository>();
 
-    private IOrderItemRepository? _orderItemRepository;
-    public IOrderItemRepository OrderItemRepository =>
-        _orderItemRepository ??= serviceProvider.GetRequiredService<IOrderItemRepository>();
-
     private IProductRepository? _productRepository;
     public IProductRepository ProductRepository =>
         _productRepository ??= serviceProvider.GetRequiredService<IProductRepository>();
