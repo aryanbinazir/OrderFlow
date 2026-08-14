@@ -94,5 +94,23 @@ namespace OrderFlow.Application.Services
             order.SoftDelete(dto.ModifiedBy);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
+
+        public async Task Confirm(ConfirmOrderReqDto dto, CancellationToken cancellationToken = default)
+        {
+            var order = await _unitOfWork.OrderRepository.Get(o => o.Id == dto.OrderId, tracked: true);
+            if (order is null) throw new DomainValidationException("Order not found.");
+
+            order.Confirm(dto.ModifiedBy);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task Cansel(CancelOrderReqDto dto, CancellationToken cancellationToken = default)
+        {
+            var order = await _unitOfWork.OrderRepository.Get(o => o.Id == dto.OrderId, tracked: true);
+            if (order is null) throw new DomainValidationException("Order not found.");
+
+            order.Cancel(dto.ModifiedBy);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
     }
 }

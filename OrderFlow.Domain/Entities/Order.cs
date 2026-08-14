@@ -76,7 +76,7 @@ namespace OrderFlow.Domain.Entities
 
         public void Cancel(Guid? modifiedBy = null)
         {
-            if (StatusId == _OrderStatus.Cancelled) return;
+            if (StatusId != _OrderStatus.Draft) throw new DomainValidationException("Only draft orders can be cancelled.");
             StatusId = _OrderStatus.Cancelled;
             TouchRecord(modifiedBy);
         }
