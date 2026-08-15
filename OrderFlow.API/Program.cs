@@ -22,6 +22,7 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
     app.UseSwagger(options => options.OpenApiVersion = OpenApiSpecVersion.OpenApi2_0);
     app.UseSwaggerUI(options => { options.SwaggerEndpoint("/swagger/v1/swagger.json", "OrderFlow v1"); });
 }

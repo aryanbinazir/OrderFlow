@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using OrderFlow.Application.Helper.Attributes;
 using OrderFlow.Infrastructure.Context;
 using System.Linq.Expressions;
 
@@ -23,7 +24,7 @@ namespace OrderFlow.Infrastructure.Repositories
             return await dbSet.AnyAsync(filter);
         }
 
-        public async Task<T?> Get(Expression<Func<T, bool>> filter, string? includeProperties = null, bool tracked = false)
+        public async Task<T?> Get(Expression<Func<T, bool>> filter, Expression<Func<T, object>>[]? includes = null, bool tracked = false)
         {
             IQueryable<T> query;
             if (tracked)
@@ -38,19 +39,17 @@ namespace OrderFlow.Infrastructure.Repositories
             {
                 query = query.Where(filter);
             }
-            if (!string.IsNullOrEmpty(includeProperties))
+            if (includes != null)
             {
-                //Category,Product -- case sensitive
-                foreach (var includeProp in includeProperties
-                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var include in includes)
                 {
-                    query = query.Include(includeProp.Trim());
+                    query = query.Include(include);
                 }
             }
             return query.FirstOrDefault();
         }
 
-        public async Task<IEnumerable<T>> GetAll(Expression<Func<T, bool>>? filter = null, string? includeProperties = null, bool tracked = false)
+        public async Task<IEnumerable<T>> GetAll(Expression<Func<T, bool>>? filter = null, Expression<Func<T, object>>[]? includes = null, bool tracked = false)
         {
             IQueryable<T> query;
             if (tracked)
@@ -65,15 +64,19 @@ namespace OrderFlow.Infrastructure.Repositories
             {
                 query = query.Where(filter);
             }
-            if (!string.IsNullOrEmpty(includeProperties))
+            if (includes != null)
             {
-                foreach (var includeProp in includeProperties
-                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var include in includes)
                 {
-                    query = query.Include(includeProp.Trim());
+                    query = query.Include(include);
                 }
             }
             return query.ToList();
+        }
+
+        public async Task Remove(T entity)
+        {
+            dbSet.Remove(entity);
         }
     }
 }

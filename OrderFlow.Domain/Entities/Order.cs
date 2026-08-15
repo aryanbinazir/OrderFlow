@@ -19,7 +19,7 @@ namespace OrderFlow.Domain.Entities
             private set => _total = value;
         }
 
-        public ICollection<OrderItem> OrderItems = new List<OrderItem>();
+        public ICollection<OrderItem> OrderItems = [];
         public Guid UserId { get; private set; }
         public User User { get; private set; }
 
@@ -31,7 +31,7 @@ namespace OrderFlow.Domain.Entities
         {
             if (userId == Guid.Empty) throw new DomainValidationException("Invalid user id.");
             if (orderNumber <= 0) throw new DomainValidationException("Order number must be a positive integer.");
-            if (OrderItems == null || !OrderItems.Any()) throw new DomainValidationException("Order must contain at least one item.");
+            if (OrderItems == null || OrderItems.Count == 0) throw new DomainValidationException("Order must contain at least one item.");
 
             var order = new Order
             {
@@ -48,11 +48,10 @@ namespace OrderFlow.Domain.Entities
 
         public void AddItem(
             Guid productId,
-            decimal unitPrice,
             int quantity)
         {
             EnsureMutable();
-            var orderItem = OrderItem.Create(productId, Id, unitPrice, quantity);
+            var orderItem = OrderItem.Create(productId, quantity);
             OrderItems.Add(orderItem);
         }
 
@@ -68,7 +67,7 @@ namespace OrderFlow.Domain.Entities
         public void Confirm(Guid? modifiedBy = null)
         {
             if (StatusId != _OrderStatus.Draft) throw new DomainValidationException("Only draft orders can be confirmed.");
-            if (!OrderItems.Any()) throw new DomainValidationException("Cannot confirm an empty order.");
+            if (OrderItems.Count == 0) throw new DomainValidationException("Cannot confirm an empty order.");
             StatusId = _OrderStatus.Confirmed;
             ConfirmedAt = DateTime.Now;
             TouchRecord(modifiedBy);

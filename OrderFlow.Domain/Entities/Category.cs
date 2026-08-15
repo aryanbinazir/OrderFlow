@@ -8,8 +8,10 @@ namespace OrderFlow.Domain.Entities
         public string? Description { get; private set; }
 
         public Guid? ParentId { get; private set; }
-        public ICollection<Category>? Children { get; private set; }
-        public ICollection<Product>? Products { get; set; }
+        public Category? Parent { get;  set; }
+
+        public ICollection<Category>? Children { get; private set; } = [];
+        public ICollection<Product>? Products { get; set; } = [];
 
         public static Category Create(
             string name,
@@ -73,6 +75,28 @@ namespace OrderFlow.Domain.Entities
 
             if (changed)
                 TouchRecord(modifiedBy);
+        }
+
+        public void AddChild(Category child)
+        {
+            Children.Add(child);
+        }
+
+        public void Delete()
+        {
+            if (ParentId is not null && Parent is not null)
+            { 
+                Parent.Children!.Remove(this);
+            }
+
+            if (Children is not null)
+            {
+                foreach (var child in Children)
+                {
+                    child.ParentId = null;
+                    child.Parent = null;
+                }
+            }
         }
 
         private static void ValidateParentId(Guid? parentId, Guid currentCategoryId)

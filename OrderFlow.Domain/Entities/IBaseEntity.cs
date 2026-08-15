@@ -3,8 +3,7 @@ namespace OrderFlow.Domain.Entities;
 public interface IBaseEntity<T>
 {
     public T Id { get; set; }
-    public bool IsActive { get; set; }
-    public bool IsDeleted { get; set; }
+
     public DateTime? CreateDate { get; set; }
     public DateTime? ModifiedDate { get; set; }
     public Guid? ModifiedById { get; set; }

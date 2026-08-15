@@ -18,8 +18,6 @@ namespace OrderFlow.Infrastructure.Configurations
             builder.Property(i => i.OrderId).IsRequired();
 
             // BASE ENTITY
-            builder.Property(o => o.IsDeleted).IsRequired();
-            builder.Property(o => o.IsActive).IsRequired();
             builder.Property(o => o.ModifiedById).IsRequired(false);
             builder.Property(o => o.CreateById).IsRequired(false);
             builder.Property(o => o.CreateDate).IsRequired(false);
@@ -28,12 +26,12 @@ namespace OrderFlow.Infrastructure.Configurations
             builder.HasOne(oi => oi.Order)
                 .WithMany(o => o.OrderItems)
                 .HasForeignKey(oi => oi.OrderId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(p => p.Product)
                 .WithMany(p => p.orderItems)
                 .HasForeignKey(p => p.ProductId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
 
         }

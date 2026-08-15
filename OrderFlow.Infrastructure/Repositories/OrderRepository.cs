@@ -1,10 +1,12 @@
 using Microsoft.EntityFrameworkCore;
+using OrderFlow.Application.Helper.Attributes;
 using OrderFlow.Domain.Entities;
 using OrderFlow.Infrastructure.Context;
 using OrderFlow.Infrastructure.Repositories.IRepositories;
 
 namespace OrderFlow.Infrastructure.Repositories
 {
+    [Scoped]
     public class OrderRepository : BaseRepository<Order>, IOrderRepository
     {
         private readonly OrderFlowContext _context;

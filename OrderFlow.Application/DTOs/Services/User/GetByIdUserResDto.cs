@@ -8,6 +8,7 @@ namespace OrderFlow.Application.DTOs.Folder.User
         public string? DisplayName { get; set; }
         public string? RoleName { get; set; }
         public DateTime? CreatedAt { get; set; }
+        public DateTime? ModifiedAt { get; set; }
         public List<GetByIdUserResDto_Orders> Orders { get; set; }
     }
 

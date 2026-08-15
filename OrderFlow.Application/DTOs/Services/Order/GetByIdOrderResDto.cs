@@ -12,6 +12,7 @@ namespace OrderFlow.Application.DTOs.Folder.Order
         public List<GetByIdOrderResDto_Item> Items { get; set; } = new();
         public DateTime? CreatedAt { get; set; }
         public DateTime? ConfirmedAt { get; set; }
+        public DateTime? ModifiedAt { get; set; }
     }
 
     public class GetByIdOrderResDto_Item

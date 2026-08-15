@@ -38,12 +38,6 @@ namespace OrderFlow.Infrastructure.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
                     b.Property<Guid?>("ModifiedById")
                         .HasColumnType("uniqueidentifier");
 
@@ -79,12 +73,6 @@ namespace OrderFlow.Infrastructure.Migrations
 
                     b.Property<DateTime?>("CreateDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<Guid?>("ModifiedById")
                         .HasColumnType("uniqueidentifier");
@@ -126,12 +114,6 @@ namespace OrderFlow.Infrastructure.Migrations
 
                     b.Property<DateTime?>("CreateDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<Guid?>("ModifiedById")
                         .HasColumnType("uniqueidentifier");
@@ -236,12 +218,6 @@ namespace OrderFlow.Infrastructure.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
                     b.Property<Guid?>("ModifiedById")
                         .HasColumnType("uniqueidentifier");
 
@@ -256,11 +232,6 @@ namespace OrderFlow.Infrastructure.Migrations
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("SKU")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("Stock")
                         .ValueGeneratedOnAdd()
@@ -294,12 +265,6 @@ namespace OrderFlow.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(320)
                         .HasColumnType("nvarchar(320)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<Guid?>("ModifiedById")
                         .HasColumnType("uniqueidentifier");
@@ -369,10 +334,12 @@ namespace OrderFlow.Infrastructure.Migrations
 
             modelBuilder.Entity("OrderFlow.Domain.Entities.Category", b =>
                 {
-                    b.HasOne("OrderFlow.Domain.Entities.Category", null)
+                    b.HasOne("OrderFlow.Domain.Entities.Category", "Parent")
                         .WithMany("Children")
                         .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Parent");
                 });
 
             modelBuilder.Entity("OrderFlow.Domain.Entities.Order", b =>
@@ -380,13 +347,13 @@ namespace OrderFlow.Infrastructure.Migrations
                     b.HasOne("OrderFlow.Domain.Entities.OrderStatus", "OrderStatus")
                         .WithMany("Orders")
                         .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("OrderFlow.Domain.Entities.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("OrderStatus");
@@ -399,13 +366,13 @@ namespace OrderFlow.Infrastructure.Migrations
                     b.HasOne("OrderFlow.Domain.Entities.Order", "Order")
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("OrderFlow.Domain.Entities.Product", "Product")
                         .WithMany("orderItems")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Order");
@@ -418,7 +385,7 @@ namespace OrderFlow.Infrastructure.Migrations
                     b.HasOne("OrderFlow.Domain.Entities.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Category");
                 });
@@ -428,7 +395,7 @@ namespace OrderFlow.Infrastructure.Migrations
                     b.HasOne("OrderFlow.Domain.Entities.UserRole", "UserRole")
                         .WithMany("Users")
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("UserRole");

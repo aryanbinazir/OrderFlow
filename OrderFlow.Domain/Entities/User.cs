@@ -13,7 +13,7 @@ namespace OrderFlow.Domain.Entities
 
         public _UserRole RoleId { get; set; } = _UserRole.Client;
         public UserRole UserRole { get; set; }
-        public ICollection<Order> Orders { get; set; } = new List<Order>();
+        public ICollection<Order> Orders { get; set; } = [];
 
         public static User Create(
             string email,

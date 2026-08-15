@@ -5,7 +5,7 @@ namespace OrderFlow.Application.DTOs.Folder.User
 {
     public class GetAllUserResDto
     {
-        public List<GetAllUserResDto_User> Users { get; set; }
+        public List<GetAllUserResDto_User> Users { get; set; } = [];
     }
 
     public class GetAllUserResDto_User

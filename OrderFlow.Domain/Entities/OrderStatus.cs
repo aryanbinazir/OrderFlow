@@ -4,6 +4,6 @@ namespace OrderFlow.Domain.Entities
 {
     public class OrderStatus : BaseLookupEntity<_OrderStatus>
     {
-        public ICollection<Order> Orders { get; set; } = new List<Order>();
+        public ICollection<Order> Orders { get; set; } = [];
     }
 }

@@ -1,9 +1,11 @@
+using OrderFlow.Application.Helper.Attributes;
 using OrderFlow.Domain.Entities;
 using OrderFlow.Infrastructure.Context;
 using OrderFlow.Infrastructure.Repositories.IRepositories;
 
 namespace OrderFlow.Infrastructure.Repositories
 {
+    [Scoped]
     public class UserRepository : BaseRepository<User>, IUserRepository
     {
         private readonly OrderFlowContext _context;

@@ -19,10 +19,6 @@ namespace OrderFlow.Infrastructure.Configurations
                 .HasMaxLength(1000)
                 .IsRequired(false);
 
-            builder.Property(p => p.SKU)
-                .IsRequired()
-                .HasMaxLength(100);
-
             builder.Property(p => p.Price)
                 .HasPrecision(18, 2)
                 .IsRequired();
@@ -35,8 +31,6 @@ namespace OrderFlow.Infrastructure.Configurations
                 .IsRequired(false);
 
             // BASE ENTITY
-            builder.Property(o => o.IsDeleted).IsRequired();
-            builder.Property(o => o.IsActive).IsRequired();
             builder.Property(o => o.ModifiedById).IsRequired(false);
             builder.Property(o => o.CreateById).IsRequired(false);
             builder.Property(o => o.CreateDate).IsRequired(false);
@@ -45,12 +39,12 @@ namespace OrderFlow.Infrastructure.Configurations
             builder.HasOne(p => p.Category)
                 .WithMany(c => c.Products)
                 .HasForeignKey(p => p.CategoryId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.SetNull);
 
             builder.HasMany(p => p.orderItems)
                 .WithOne(oi => oi.Product)
                 .HasForeignKey(oi => oi.ProductId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

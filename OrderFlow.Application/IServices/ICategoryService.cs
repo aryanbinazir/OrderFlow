@@ -11,8 +11,8 @@ namespace OrderFlow.Application.IServices
     {
         Task<CreateCategoryResDto> Create(CreateCategoryReqDto dto, CancellationToken cancellationToken = default);
         Task<GetByIdCategoryResDto> GetById(Guid id, CancellationToken cancellationToken = default);
-        Task<GetAllCategoryResDto> GetAll(CancellationToken cancellationToken = default);
+        Task<GetAllCategoryResDto> List(CancellationToken cancellationToken = default);
         Task<UpdateCategoryResDto> Update(Guid id, UpdateCategoryReqDto dto, CancellationToken cancellationToken = default);
-        Task Delete(DeleteCategoryReqDto dto, CancellationToken cancellationToken = default);
+        Task<bool> Delete(Guid id, CancellationToken cancellationToken = default);
     }
 }

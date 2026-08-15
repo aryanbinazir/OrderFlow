@@ -6,9 +6,9 @@ namespace OrderFlow.Application.IServices
     {
         Task<CreateOrderResDto> Create(CreateOrderReqDto dto, CancellationToken cancellationToken = default);
         Task<GetByIdOrderResDto> GetById(Guid id, CancellationToken cancellationToken = default);
-        Task<GetAllOrderResDto> GetAll(CancellationToken cancellationToken = default);
-        Task Confirm(ConfirmOrderReqDto dto, CancellationToken cancellationToken = default);
-        Task Canscl(CancelOrderReqDto dto, CancellationToken cancellationToken = default);
-        Task Delete(DeleteOrderReqDto dto, CancellationToken cancellationToken = default);
+        Task<GetAllOrderResDto> List(CancellationToken cancellationToken = default);
+        Task<bool> Confirm(ConfirmOrderReqDto dto, CancellationToken cancellationToken = default);
+        Task<bool> Cancel(CancelOrderReqDto dto, CancellationToken cancellationToken = default);
+        Task<bool> Delete(Guid id, CancellationToken cancellationToken = default);
     }
 }

@@ -10,9 +10,9 @@ namespace OrderFlow.Application.IServices
     {
         Task<CreateUserResDto> Create(CreateUserReqDto dto, CancellationToken cancellationToken = default);
         Task<GetByIdUserResDto> GetById(Guid id, CancellationToken cancellationToken = default);
-        Task<GetAllUserResDto> GetAll(CancellationToken cancellationToken = default);
+        Task<GetAllUserResDto> List(CancellationToken cancellationToken = default);
         Task<UpdateUserResDto> UpdateDisplayName(Guid id, UpdateUserReqDto dto, CancellationToken cancellationToken = default);
-        Task PromoteToAdmin(PromoteUserReqDto dto, CancellationToken cancellationToken = default);
-        Task Delete(DeleteUserReqDto dto, CancellationToken cancellationToken = default);
+        Task<bool> PromoteToAdmin(PromoteToAdminReqDto dto, CancellationToken cancellationToken = default);
+        Task<bool> Delete(Guid id, CancellationToken cancellationToken = default);
     }
 }

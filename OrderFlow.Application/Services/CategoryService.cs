@@ -1,4 +1,8 @@
+using Microsoft.EntityFrameworkCore;
 using OrderFlow.Application.DTOs.Folder.Category;
+using OrderFlow.Application.Helper.Attributes;
+using OrderFlow.Application.Helper.Exception;
+using OrderFlow.Application.Helper.Exception.Enums;
 using OrderFlow.Application.IPatterns;
 using OrderFlow.Application.IServices;
 using OrderFlow.Domain.Entities;
@@ -6,6 +10,7 @@ using OrderFlow.Domain.Exceptions;
 
 namespace OrderFlow.Application.Services
 {
+    [Scoped]
     public class CategoryService : ICategoryService
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -17,81 +22,203 @@ namespace OrderFlow.Application.Services
 
         public async Task<CreateCategoryResDto> Create(CreateCategoryReqDto dto, CancellationToken cancellationToken = default)
         {
-            // duplicate name check
-            if (await _unitOfWork.CategoryRepository.Any(c => c.Name == dto.Name))
-                throw new DomainValidationException("A category with the same name already exists.");
+            try
+            {
+                // duplicate name check
+                if (await _unitOfWork.CategoryRepository.Any(c => c.Name == dto.Name))
+                {
+                    throw new InternalServerErrorException(
+                    "A category with the same name already exists.",
+                    _CriticalLevel.Three);
+                }
 
-            var category = Category.Create(dto.Name, dto.Description, dto.ParentCategoryId, dto.CreatedBy);
-            await _unitOfWork.CategoryRepository.Add(category);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-            return new CreateCategoryResDto { Id = category.Id };
+                var category = Category.Create(dto.Name, dto.Description, dto.ParentId, dto.CreatedBy);
+                
+                if (dto.ParentId != null)
+                {
+                    var parent = await _unitOfWork.CategoryRepository.Get(c => c.Id == dto.ParentId);
+                    parent.AddChild(category);
+                }
+
+                await _unitOfWork.CategoryRepository.Add(category);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+                return new CreateCategoryResDto { Id = category.Id };
+            }
+            catch (DomainValidationException ex)
+            {
+                throw new BadRequestException(
+                    ex.Message,
+                    _CriticalLevel.Zero);
+            }
+            catch (DbUpdateException)
+            {
+                throw new InternalServerErrorException(
+                    "Try again later",
+                    _CriticalLevel.Five);
+            }
         }
 
         public async Task<GetByIdCategoryResDto> GetById(Guid id, CancellationToken cancellationToken = default)
         {
-            // include children and products for read operations
-            var category = await _unitOfWork.CategoryRepository.Get(c => c.Id == id, includeProperties: "Children, Products", tracked: false);
-            if (category is null) throw new DomainValidationException("Category not found.");
-            return new GetByIdCategoryResDto()
+            try
             {
-                Id = category.Id,
-                Name = category.Name,
-                Description = category.Description,
-                ParentId = category.ParentId,
-                Products = category.Products?.Select(p => new GetByIdCategoryResDto_Products
+                var category = await _unitOfWork.CategoryRepository.Get(
+                    c => c.Id == id,
+                    [ x => x.Products, x => x.Parent, x => x.Children],
+                    tracked: false);
+                if (category is null)
                 {
-                    Id = p.Id,
-                    Name = p.Name,
-                }).ToList(),
-                Children = category.Children?.Select(c => new GetByIdCategoryResDto_Children
+                    throw new InternalServerErrorException(
+                    "Category not found",
+                    _CriticalLevel.Three);
+                }
+                return new GetByIdCategoryResDto()
                 {
-                    Id = c.Id,
-                    Name = c.Name,
-                }).ToList(),
-                CreatedAt = category.CreateDate
-            };
+                    Name = category.Name,
+                    Description = category.Description,
+                    ParentId = category.ParentId,
+                    Products = category.Products?.Select(p => new GetByIdCategoryResDto_Products
+                    {
+                        Id = p.Id,
+                        Name = p.Name,
+                    }).ToList(),
+                    Children = category.Children?.Select(c => new GetByIdCategoryResDto_Children
+                    {
+                        Id = c.Id,
+                        Name = c.Name,
+                    }).ToList(),
+                    CreatedAt = category.CreateDate,
+                    ModifiedAt = category.ModifiedDate
+                };
+            }
+            catch (DomainValidationException ex)
+            {
+                throw new BadRequestException(
+                    ex.Message,
+                    _CriticalLevel.Zero);
+            }
+            catch (DbUpdateException)
+            {
+                throw new InternalServerErrorException(
+                    "Try again later",
+                    _CriticalLevel.Five);
+            }
         }
 
-        public async Task<GetAllCategoryResDto> GetAll(CancellationToken cancellationToken = default)
+        public async Task<GetAllCategoryResDto> List(CancellationToken cancellationToken = default)
         {
-            var categories = await _unitOfWork.CategoryRepository.GetAll(includeProperties: "Children, Products", tracked: false);
-            return new GetAllCategoryResDto()
+            try
             {
-                Categories = categories.Select(c => new GetAllCategoryResDto_Category
+                var categories = await _unitOfWork.CategoryRepository.GetAll(includes: [x => x.Products], tracked: false);
+                return new GetAllCategoryResDto()
                 {
-                    Id = c.Id,
-                    Name = c.Name,
-                    Description = c.Description,
-                    ParentId = c.ParentId
-                }).ToList()
-            };
+                    Categories = categories.Select(c => new GetAllCategoryResDto_Category
+                    {
+                        Id = c.Id,
+                        Name = c.Name,
+                        Description = c.Description,
+                        ParentId = c.ParentId,
+                        Products = c.Products?.Select(p => new GetAllCategoryResDto_Category_Products
+                        {
+                            Name = p.Name
+                        }).ToList(),
+                    }).ToList()
+                };
+            }
+            catch (DomainValidationException ex)
+            {
+                throw new BadRequestException(
+                    ex.Message,
+                    _CriticalLevel.Zero);
+            }
+            catch (DbUpdateException)
+            {
+                throw new InternalServerErrorException(
+                    "Try again later",
+                    _CriticalLevel.Five);
+            }
         }
 
         public async Task<UpdateCategoryResDto> Update(Guid id, UpdateCategoryReqDto dto, CancellationToken cancellationToken = default)
         {
-            var category = await _unitOfWork.CategoryRepository.Get(c => c.Id == id, tracked: true);
-            if (category is null) throw new DomainValidationException("Category not found.");
+            try
+            {
+                var category = await _unitOfWork.CategoryRepository.Get(c => c.Id == id, [x => x.Products], tracked: true);
+                if (category is null)
+                {
+                    throw new InternalServerErrorException(
+                    "Category not found",
+                    _CriticalLevel.Three);
+                }
 
-            // Business rules (delegated to entity)
-            category.Update(dto.Name, dto.Description, dto.ParentId, dto.ModifiedBy);
+                // duplicate name check
+                if (await _unitOfWork.CategoryRepository.Any(c => c.Name == dto.Name))
+                {
+                    throw new InternalServerErrorException(
+                    "A category with the same name already exists.",
+                    _CriticalLevel.Three);
+                }
 
-            await _unitOfWork.CategoryRepository.Update(category);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+                if (dto.ParentId != null)
+                {
+                    var parent = await _unitOfWork.CategoryRepository.Get(c => c.Id == dto.ParentId);
+                    parent.AddChild(category);
+                }
 
-            return new UpdateCategoryResDto { Id = category.Id };
+                // Business rules (delegated to entity)
+                category.Update(dto.Name, dto.Description, dto.ParentId, dto.ModifiedBy);
+
+                await _unitOfWork.CategoryRepository.Update(category);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                return new UpdateCategoryResDto { Id = category.Id };
+            }
+            catch (DomainValidationException ex)
+            {
+                throw new BadRequestException(
+                    ex.Message,
+                    _CriticalLevel.Zero);
+            }
+            catch (DbUpdateException)
+            {
+                throw new InternalServerErrorException(
+                    "Try again later",
+                    _CriticalLevel.Five);
+            }
         }
 
-        public async Task Delete(DeleteCategoryReqDto dto, CancellationToken cancellationToken = default)
+        public async Task<bool> Delete(Guid id, CancellationToken cancellationToken = default)
         {
-            var category = await _unitOfWork.CategoryRepository.Get(c => c.Id == dto.CategoryId, includeProperties: "Products", tracked: true);
-            if (category is null) throw new DomainValidationException("Category not found.");
+            try
+            {
+                var category = await _unitOfWork.CategoryRepository.Get(
+                    c => c.Id == id,
+                    [x => x.Products, x => x.Children, x => x.Parent],
+                    tracked: true);
+                if (category is null)
+                {
+                    throw new InternalServerErrorException(
+                    "Category not found",
+                    _CriticalLevel.Three);
+                }
 
-            // Prevent deleting when products exist
-            if (category.Products != null && category.Products.Any())
-                throw new DomainValidationException("Cannot delete category that has products.");
-
-            category.SoftDelete(dto.ModifiedBy);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+                category.Delete();
+                await _unitOfWork.CategoryRepository.Remove(category);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+                return true;
+            }
+            catch (DomainValidationException ex)
+            {
+                throw new BadRequestException(
+                    ex.Message,
+                    _CriticalLevel.Zero);
+            }
+            //catch (DbUpdateException)
+            //{
+            //    throw new InternalServerErrorException(
+            //        "Try again later",
+            //        _CriticalLevel.Five);
+            //}
         }
     }
 }
