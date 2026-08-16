@@ -1,6 +1,11 @@
 <Solution>
-  <Project Path="OrderFlow.API/OrderFlow.API.csproj" />
-  <Project Path="OrderFlow.Application/OrderFlow.Application.csproj" />
-  <Project Path="OrderFlow.Domain/OrderFlow.Domain.csproj" />
-  <Project Path="OrderFlow.Infrastructure/OrderFlow.Infrastructure.csproj" />
+  <Folder Name="/src/">
+    <Project Path="OrderFlow.API/OrderFlow.API.csproj" />
+    <Project Path="OrderFlow.Application/OrderFlow.Application.csproj" />
+    <Project Path="OrderFlow.Domain/OrderFlow.Domain.csproj" />
+    <Project Path="OrderFlow.Infrastructure/OrderFlow.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="OrderFlow.UnitTests/OrderFlow.UnitTests.csproj" Id="2393d703-1170-4087-a4ef-96be85572ed3" />
+  </Folder>
 </Solution>
