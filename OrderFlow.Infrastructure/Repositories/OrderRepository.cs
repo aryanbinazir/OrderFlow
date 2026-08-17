@@ -15,7 +15,7 @@ namespace OrderFlow.Infrastructure.Repositories
             _context = context;
         }
 
-        public Task<int> GetNextOrderNumber()
+        public Task<int> GetLastOrderNumber()
         {
             return _context.Orders.OrderByDescending(o => o.OrderNumber).Select(o => o.OrderNumber).FirstOrDefaultAsync();
         }

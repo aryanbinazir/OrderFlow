@@ -125,6 +125,7 @@ namespace OrderFlow.Application.Services
                     _CriticalLevel.Five);
             }
         }
+       
         public async Task<UpdateUserResDto> UpdateDisplayName(Guid id, UpdateUserReqDto dto, CancellationToken cancellationToken = default)
         {
             try

@@ -8,7 +8,6 @@ using OrderFlow.Application.IServices;
 using OrderFlow.Domain.Entities;
 using OrderFlow.Domain.Enums;
 using OrderFlow.Domain.Exceptions;
-using System.Linq.Expressions;
 
 namespace OrderFlow.Application.Services
 {
@@ -55,7 +54,7 @@ namespace OrderFlow.Application.Services
                     }
                 }
 
-                var orderNumber = await _unitOfWork.OrderRepository.GetNextOrderNumber();
+                var orderNumber = await _unitOfWork.OrderRepository.GetLastOrderNumber();
                 orderNumber++;
 
                 var order = Order.Create(dto.UserId, orderNumber, items, dto.CreatedBy);
@@ -242,7 +241,7 @@ namespace OrderFlow.Application.Services
             {
                 var order = await _unitOfWork.OrderRepository.Get(
                     filter: o => o.Id == dto.OrderId,
-                    includes: [ x => x.OrderItems],
+                    includes: [x => x.OrderItems],
                     tracked: true);
                 if (order is null)
                 {
